@@ -7,7 +7,8 @@ BASE_DIR=/opt/retinaProbe
 
 extract(){
   DOWNLOAD=$1
-  if [[ $DOWNLOAD -eq "" ]]; then
+  echo DOWNLOAD $DOWNLOAD
+  if [[ -z $DOWNLOAD ]]; then
     echo "Argument Missing <Download Path>"
     exit 1
   fi
@@ -206,7 +207,7 @@ resolve_arguments(){
       fi
 
       if [[ $DOWNLOAD_LOCATION_UPDATE -eq 1 ]]; then
-        $DOWNLOAD_LOCATION_UPDATE=2
+        DOWNLOAD_LOCATION_UPDATE=2
         DOWNLOAD_LOC=$arg
       fi
 
