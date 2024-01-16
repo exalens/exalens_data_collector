@@ -115,7 +115,7 @@ remove_containers_images_saved_data(){
     stop_services
 
     echo "Removing all images"
-    docker rmi $(docker images -q)
+    docker rmi $(docker images -q) > /dev/null
 
     # Delete the .exalens folder
     echo "Deleting saved data and configurations..."
