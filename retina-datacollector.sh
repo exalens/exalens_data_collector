@@ -7,7 +7,8 @@ BASE_DIR=/opt/retinaProbe
 
 extract(){
   DOWNLOAD=$1
-  if [[ $DOWNLOAD -eq "" ]]; then
+  echo DOWNLOAD $DOWNLOAD
+  if [[ -z $DOWNLOAD ]]; then
     echo "Argument Missing <Download Path>"
     exit 1
   fi
@@ -105,14 +106,17 @@ stop_services() {
 
 uninstall(){
     echo "Removing installation"
-    remove_containers_saved_data
+    remove_containers_images_saved_data
     echo "Uninstallation complete."
 }
 
-remove_containers_saved_data(){
+remove_containers_images_saved_data(){
       # Stop all running services
     echo "Stopping all running services..."
     stop_services
+
+    echo "Removing all images"
+    docker rmi -f $(docker images -q) > /dev/null
 
     # Delete the .exalens folder
     echo "Deleting saved data and configurations..."
@@ -203,7 +207,7 @@ resolve_arguments(){
       fi
 
       if [[ $DOWNLOAD_LOCATION_UPDATE -eq 1 ]]; then
-        $DOWNLOAD_LOCATION_UPDATE=2
+        DOWNLOAD_LOCATION_UPDATE=2
         DOWNLOAD_LOC=$arg
       fi
 
