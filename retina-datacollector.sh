@@ -105,14 +105,17 @@ stop_services() {
 
 uninstall(){
     echo "Removing installation"
-    remove_containers_saved_data
+    remove_containers_images_saved_data
     echo "Uninstallation complete."
 }
 
-remove_containers_saved_data(){
+remove_containers_images_saved_data(){
       # Stop all running services
     echo "Stopping all running services..."
     stop_services
+
+    echo "Removing all images"
+    docker rmi $(docker images -q)
 
     # Delete the .exalens folder
     echo "Deleting saved data and configurations..."
