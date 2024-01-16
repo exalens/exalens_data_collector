@@ -1,6 +1,4 @@
 
-# README for DataCollector
-
 ## Overview
 This document provides instructions for the installation, usage, and maintenance of the Retina DataCollector software.
 
