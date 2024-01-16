@@ -12,7 +12,11 @@ This document provides instructions for the installation, usage, and maintenance
 ## Starting DataCollector
 To start the Retina DataCollector, follow these steps:
 1. Download the DataCollector configuration from the user interface.
-2. Extract the downloaded file using the command:
+   If you are planning on running the probe in a different machine from where you have downloaded the configuration (say a virutal machine) please use the following scp commad to move the downloaded configuration
+   ```
+   scp /path/to/localfile.tar.gz username@remote_IP:/remote/directory
+   ```
+3. Extract the downloaded file using the command:
    ```
    ./retina-datacollector.sh --extract <download_dir>
    ```
@@ -21,7 +25,7 @@ To start the Retina DataCollector, follow these steps:
    ./retina-datacollector.sh --extract /home/dummyUser/Downloads/DummyDataCollector.tar.gz
    ```
    This extracts the files to `/opt/retinaDataCollector` and creates the directory if it does not exist.
-3. Start DataCollector using:
+4. Start DataCollector using:
    ```
    ./retina-datacollector.sh --start
    ```
