@@ -7,7 +7,6 @@ BASE_DIR=/opt/retinaProbe
 
 extract(){
   DOWNLOAD=$1
-  echo DOWNLOAD $DOWNLOAD
   if [[ -z $DOWNLOAD ]]; then
     echo "Argument Missing <Download Path>"
     exit 1
@@ -18,7 +17,7 @@ extract(){
     sudo mkdir -p $BASE_DIR
     sudo chmod 777 $BASE_DIR
   fi
-  (cd $BASE_DIR && sudo tar -xzvf $DOWNLOAD --strip-components=0)
+  (cd $BASE_DIR && sudo tar -xzvf $DOWNLOAD --strip-components=0 > /dev/null)
 }
 
 # Function to pull an image if not present
@@ -67,14 +66,11 @@ start_services() {
     docker run -d \
       --name probe_ctrl \
       --restart always \
-      --cap-add NET_ADMIN \
-      --cap-add NET_RAW \
       --volume ~/.docker:/root/.docker \
-      --volume $BASE_DIR/log:/opt/retinaProbe/log \
-      --volume $BASE_DIR/data/nodes:/opt/retinaProbe/data/nodes \
-      --volume $BASE_DIR/conf:/opt/retinaProbe/conf \
+      --volume $BASE_DIR:/opt/retinaProbe \
       --volume /var/run/docker.sock:/var/run/docker.sock \
       --network host \
+      --workdir /home/exalens/retinaProbeCtrl \
       --entrypoint python3.10 \
       exalens/community_probe:latest probeCtrl.py > /dev/null
 
@@ -116,7 +112,7 @@ remove_containers_images_saved_data(){
     stop_services
 
     echo "Removing all images"
-    docker rmi -f $(docker images -q) > /dev/null
+    docker rmi $(docker images -q) > /dev/null
 
     # Delete the .exalens folder
     echo "Deleting saved data and configurations..."
