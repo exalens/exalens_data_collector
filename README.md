@@ -8,7 +8,7 @@ This document provides instructions for the installation, usage, and maintenance
 3. [Updating DataCollector](#updating-datacollector)
 4. [Uninstalling DataCollector](#uninstalling-datacollector)
 5. [Updating Hostname](#updating-hostname)
-6. [Setting network interface to promiscuous mode](#promiscuous-mode)
+6. [Setting network interface to promiscuous mode](#setting-network-interface-to-promiscuous-mode)
 
 ## Starting DataCollector
 To start the Retina DataCollector, follow these steps:
