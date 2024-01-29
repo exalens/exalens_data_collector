@@ -5,20 +5,117 @@
 PRIMARY=""
 BASE_DIR=/opt/retinaProbe
 
+
+download_cfg() {
+    read -p "Enter the cortex hostname: " HOSTNAME
+    read -p "Enter the data collector name: " PROBE_NAME
+    read -p "Enter the Username: " USER
+    read -s -p "Enter the Password: " PASS
+
+    # The URL and output file name could be hardcoded or made dynamic as well
+    local url="https://"$HOSTNAME"/api/probe/download_cfg"
+    local output_file=$PWD"/"$PROBE_NAME".tar.gz"
+
+    # Constructing and executing the curl command
+    curl -k -X GET "$url" -H "User: $USER" -H "Pass: $PASS" -H "name: $PROBE_NAME" --output "$output_file"
+
+    if [ ! -f "$output_file" ]; then
+        echo "Download failed!"
+        return 1
+    fi
+
+    # Determine the type of the file
+    local file_type=$(file --mime-type -b "$output_file")
+
+    if [ "$file_type" = "application/json" ]; then
+        temp="${output_file%/*}/error.json"
+        echo "Something went wrong. Kindly check the error("$temp")."
+        mv "$output_file" temp
+    elif [[ $file_type == "application/gzip" ]]; then
+        echo "Download Complete."
+        extract $output_file
+    elif [[ $file_type == "text/plain" ]]; then
+        echo | cat $output_file
+        rm -f $output_file
+    else
+        echo "Somthing went wrong."
+    fi
+}
+
+
 extract(){
   DOWNLOAD=$1
   if [[ -z $DOWNLOAD ]]; then
     echo "Argument Missing <Download Path>"
     exit 1
   fi
-
   if [ ! -d $BASE_DIR ]; then
     # Create the directory
     sudo mkdir -p $BASE_DIR
     sudo chmod 777 $BASE_DIR
   fi
   (cd $BASE_DIR && sudo tar -xzvf $DOWNLOAD --strip-components=0 > /dev/null)
+  echo "Extraction complete."
 }
+
+
+extract_latest_tar_gz() {
+    # Define the directory to search in
+    local directory=$1
+
+    # Check if the directory is provided
+    if [ -z "$directory" ]; then
+        echo "Please specify a directory."
+        return 1
+    fi
+
+    # Check if the directory exists
+    if [ -d "$directory" ]; then
+        # Find the latest .tar.gz file
+        local latest_file=$(find "$directory" -name '*.tar.gz' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -d' ' -f2-)
+
+        # Check if any .tar.gz files were found
+        if [ -z "$latest_file" ]; then
+            echo "No .tar.gz files found in $directory"
+            return 1
+        fi
+    else
+      latest_file=$directory
+    fi
+
+    echo "Extracting $latest_file..."
+    extract $latest_file
+}
+
+
+set_promiscuous_mode() {
+
+    echo "Available network interfaces:"
+    interfaces=($(ip -o link show | awk -F': ' '{print $2}' | awk -F'@' '{print $1}'))
+
+    select interface in "${interfaces[@]}"; do
+        if [ -n "$interface" ]; then
+            echo "You have selected the interface: $interface"
+            break
+        else
+            echo "Invalid selection. Please try again."
+        fi
+    done
+
+    if [ -z "$interface" ]; then
+        echo "No interface selected to set to promiscuous mode."
+        return 1
+    fi
+
+    # Set the network interface to promiscuous mode
+    sudo ip link set "$interface" promisc on
+    if [ $? -eq 0 ]; then
+        echo "Successfully set $interface to promiscuous mode."
+    else
+        echo "Failed to set $interface to promiscuous mode."
+    fi
+}
+
 
 # Function to pull an image if not present
 pull_if_not_exists() {
@@ -190,9 +287,11 @@ update_probe_hostname(){
 }
 
 
+
+
 BASE_DIR_UPDATE=0
 DOWNLOAD_LOCATION_UPDATE=0
-DOWNLOAD_LOC=""
+DOWNLOAD_LOC=$PWD
 resolve_arguments(){
   for arg in "$@"
 
@@ -232,6 +331,12 @@ resolve_arguments(){
           --uninstall)
             PRIMARY=--uninstall
             ;;
+          --download)
+            PRIMARY=--download
+            ;;
+          --set_promisc)
+            PRIMARY=--set_promisc
+            ;;
       esac
 
   done
@@ -241,7 +346,7 @@ resolve_arguments $@
 
 case $PRIMARY in
     --extract)
-        extract $DOWNLOAD_LOC
+        extract_latest_tar_gz $DOWNLOAD_LOC
         ;;
     --start)
         start_services
@@ -258,7 +363,14 @@ case $PRIMARY in
     --uninstall)
         uninstall
         ;;
+    --download)
+        download_cfg
+        ;;
+    --set_promisc)
+        # Main script logic
+        set_promiscuous_mode
+        ;;
     *)
-        echo "Usage: $PRIMARY --extract {download_dir} --start | --stop | --update | --update-hostname {hostname} | --uninstall "
+        echo "Usage: $PRIMARY --extract <download_dir> --start | --stop | --update | --update-hostname {hostname} | --uninstall | --download | --set_promisc"
         exit 1
 esac
