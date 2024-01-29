@@ -28,11 +28,14 @@ To start the Retina DataCollector, follow these steps:
 3. CLI options (Download and Extract):
   To download and extract the data collector configuration using CLI use the command.
    ```
-   ./retina-datacollector.sh --download
-   Enter the cortex hostname: <hotname>
-   Enter the data collector name: <data-collector-name>
-   Enter the Username: <User>
-   Enter the Password: <Pass>
+   ./retina-datacollector.sh --download>
+   ```
+   Followed by which you'll be prompted to input the following
+   ```
+   >>Enter the cortex hostname: <hotname>
+   >>Enter the data collector name: <data-collector-name>
+   >>Enter the Username: <User>
+   >>Enter the Password: <Pass
    ```
    
 4. Start DataCollector using:
