@@ -16,7 +16,7 @@ To start the Retina DataCollector, follow these steps:
    ```
    scp /path/to/localfile.tar.gz username@remote_IP:/remote/directory
    ```
-3. Extract the downloaded file using the command:
+2. Extract the downloaded file using the command:
    ```
    ./retina-datacollector.sh --extract <download_dir>
    ```
@@ -25,6 +25,16 @@ To start the Retina DataCollector, follow these steps:
    ./retina-datacollector.sh --extract /home/dummyUser/Downloads/DummyDataCollector.tar.gz
    ```
    This extracts the files to `/opt/retinaDataCollector` and creates the directory if it does not exist.
+3. CLI options (Download and Extract):
+  To download and extract the data collector configuration using CLI use the command.
+   ```
+   ./retina-datacollector.sh --download
+   Enter the cortex hostname: <hotname>
+   Enter the data collector name: <data-collector-name>
+   Enter the Username: <User>
+   Enter the Password: <Pass>
+   ```
+   
 4. Start DataCollector using:
    ```
    ./retina-datacollector.sh --start
