@@ -28,10 +28,10 @@ There are two ways to setup the DataCollector, one using the GUI to download (1)
    ```
    This extracts the files to `/opt/retinaDataCollector` and creates the directory if it does not exist.
    The argument <download_dir> is optional, provided the downloaded configuration (.tar.gz) file is present in the same directory as the retina-datacollector.sh script.
-4. CLI options (Download and Extract):
+3. CLI options (Download and Extract):
   To download and extract the data collector configuration using CLI use the command.
    ```
-   ./retina-datacollector.sh --download>
+   ./retina-datacollector.sh --download
    ```
    Followed by which you'll be prompted to input the following
    ```
@@ -42,7 +42,7 @@ There are two ways to setup the DataCollector, one using the GUI to download (1)
    ```
    Thereafter start the DataCollector as mentioned in (4)
    
-5. Start DataCollector using:
+4. Start DataCollector using:
    ```
    ./retina-datacollector.sh --start
    ```
