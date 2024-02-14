@@ -1,4 +1,4 @@
-# DataCollector Management Script
+## Overview
 
 This document provides detailed instructions for the installation, usage, and maintenance of the DataCollector, a tool for managing data collection environments.
 
