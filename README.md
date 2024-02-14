@@ -10,7 +10,6 @@ This document provides detailed instructions for the installation, usage, and ma
 4. [Uninstalling DataCollector](#uninstalling-datacollector)
 5. [Updating Hostname](#updating-hostname)
 6. [Setting Network Interface to Promiscuous Mode](#setting-network-interface-to-promiscuous-mode)
-7. [Downloading Configuration for DataCollector](#downloading-configuration-for-datacollector)
 
 ## Starting DataCollector
 
@@ -21,7 +20,13 @@ To start the Retina DataCollector using the CLI for downloading and extracting c
    ```
    ./retina-datacollector.sh --download
    ```
-   You will be prompted to enter the cortex hostname, data collector name, username, and password.
+   During this process, you will be prompted to enter the following details:
+   - Cortex hostname
+   - Data collector name which is registered
+   - Choose the data collector you want to use
+   - Username
+   - Password (input is hidden for security)
+   After downloading, the script automatically extracts the configuration.
 
 2. **Start DataCollector:**
    To start the DataCollector:
