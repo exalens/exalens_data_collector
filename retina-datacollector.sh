@@ -3,7 +3,19 @@
 
 
 PRIMARY=""
-BASE_DIR=/opt/retinaProbe
+BASE_DIR=~/.exalens/retinaProbe
+TAG="latest"
+
+
+set_tag() {
+  TAG=$1
+  if [ -z "$TAG" ]; then
+#    echo "Please provide the tag for images."
+#    read TAG
+    TAG="latest"
+  fi
+
+}
 
 
 download_cfg() {
@@ -14,7 +26,7 @@ download_cfg() {
 
     # The URL and output file name could be hardcoded or made dynamic as well
     local url="https://"$HOSTNAME"/api/probe/download_cfg"
-    local output_file=$PWD"/"$PROBE_NAME".tar.gz"
+    local output_file=$BASE_DIR"/"$PROBE_NAME".tar.gz"
 
     # Constructing and executing the curl command
     curl -k -X GET "$url" -H "User: $USER" -H "Pass: $PASS" -H "name: $PROBE_NAME" --output "$output_file"
@@ -32,6 +44,7 @@ download_cfg() {
         echo "Something went wrong. Kindly check the error("$temp")."
         mv "$output_file" temp
     elif [[ $file_type == "application/gzip" ]]; then
+#        echo "Downloaded configuration saved to $output_file"
         echo "Download Complete."
         extract $output_file
     elif [[ $file_type == "text/plain" ]]; then
@@ -126,11 +139,11 @@ pull_if_not_exists() {
 }
 
 pull_images() {
-    echo "Pulling all images..."
+    echo "Pulling all images with tag $TAG..."
 
     # Pull all the containers
-    docker pull exalens/community_probe:latest
-    docker pull exalens/community_zeek:latest
+    docker pull exalens/community_probe:$TAG
+    docker pull exalens/community_zeek:$TAG
 }
 
 start_services() {
@@ -156,8 +169,8 @@ start_services() {
     fi
 
     # Pull necessary images if not exists
-    pull_if_not_exists exalens/community_probe:latest
-    pull_if_not_exists exalens/community_zeek:latest
+    pull_if_not_exists exalens/community_probe:$TAG
+    pull_if_not_exists exalens/community_zeek:$TAG
 
     # Start the containers
     docker run -d \
@@ -169,7 +182,7 @@ start_services() {
       --network host \
       --workdir /home/exalens/retinaProbeCtrl \
       --entrypoint python3.10 \
-      exalens/community_probe:latest probeCtrl.py > /dev/null
+      exalens/community_probe:$TAG probeCtrl.py > /dev/null
 
 
 #    progress
@@ -225,7 +238,7 @@ update_images() {
     stop_services
 
     # Pull all Docker images
-    echo "Pulling latest Docker images..."
+    echo "Pulling Docker images with tag $TAG..."
     pull_images
 
     # Restart the services
@@ -291,7 +304,7 @@ update_probe_hostname(){
 
 BASE_DIR_UPDATE=0
 DOWNLOAD_LOCATION_UPDATE=0
-DOWNLOAD_LOC=$PWD
+DOWNLOAD_LOC=$BASE_DIR
 resolve_arguments(){
   for arg in "$@"
 
@@ -349,12 +362,14 @@ case $PRIMARY in
         extract_latest_tar_gz $DOWNLOAD_LOC
         ;;
     --start)
+        set_tag $2
         start_services
         ;;
     --stop)
         stop_services
         ;;
     --update)
+        set_tag $2
         update_images
         ;;
     --update-hostname)
@@ -371,6 +386,6 @@ case $PRIMARY in
         set_promiscuous_mode
         ;;
     *)
-        echo "Usage: $PRIMARY --extract <download_dir> --start | --stop | --update | --update-hostname {hostname} | --uninstall | --download | --set_promisc"
+        echo "Usage: $PRIMARY --extract <download_dir> --start <tag>| --stop | --update <tag>| --update-hostname {hostname} | --uninstall | --download | --set_promisc"
         exit 1
 esac
