@@ -27,7 +27,8 @@ download_cfg() {
     # The URL and output file name could be hardcoded or made dynamic as well
     local url="https://"$HOSTNAME"/api/probe/download_cfg"
     local output_file=$BASE_DIR"/"$PROBE_NAME".tar.gz"
-
+    sudo mkdir -p $BASE_DIR
+    sudo chmod 777 $BASE_DIR
     # Constructing and executing the curl command
     curl -k -X GET "$url" -H "User: $USER" -H "Pass: $PASS" -H "name: $PROBE_NAME" --output "$output_file"
 
