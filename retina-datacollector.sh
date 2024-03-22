@@ -39,11 +39,11 @@ download_cfg() {
 
     # Determine the type of the file
     local file_type=$(file --mime-type -b "$output_file")
-
+    temp="${output_file%/*}/error.json"
+    rm -f $temp
     if [ "$file_type" = "application/json" ]; then
-        temp="${output_file%/*}/error.json"
         echo "Something went wrong. Kindly check the error("$temp")."
-        mv "$output_file" temp
+        mv "$output_file" $temp
     elif [[ $file_type == "application/gzip" ]]; then
 #        echo "Downloaded configuration saved to $output_file"
         echo "Download Complete."
