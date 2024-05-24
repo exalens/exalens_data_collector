@@ -54,8 +54,31 @@ download_cfg() {
     else
         echo "Somthing went wrong."
     fi
+    
+    # move utility scripts to .exalens
+    echo "Proceeding to move utility scripts."
+    move_utility_scripts "$HOME/exalens_data_collector" "$HOME/.exalens/utilities"
 }
 
+
+move_utility_scripts(){
+	local SOURCE_DIR="$1"
+        local DESTINATION_DIR="$2" 
+        
+        if [ ! -d "$DESTINATION_DIR" ]; then
+        echo "($DESTINATION_DIR) does not exist, creating..."
+        mkdir -p "$DESTINATION_DIR"
+    	fi
+	for file in "$SOURCE_DIR"/*.py; do
+		cp "$file" "$DESTINATION_DIR"
+    	done
+    	# Check if the move was successful
+        if [ "$(ls -A $DESTINATION_DIR/*.py 2>/dev/null)" ]; then
+		echo "Utility scripts moved successfully."
+        else
+		echo "Failed to move utility scripts."
+        fi 
+}
 
 extract(){
   DOWNLOAD=$1
